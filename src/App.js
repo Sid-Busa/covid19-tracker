@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import { Card, Chart, CountryPicker } from './components'
+import {fetchData} from './api'
+import style from './App.module.css';
+import logo from './images/covid-19.png';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component{
+  constructor(props){
+    super(props)
+    this.state={
+      data : {},
+      country:''
+    }
+  }
+  async componentDidMount(){
+    const data = await fetchData()
+    this.setState({
+      data:data
+    })
+  }
+  handleCountryChange = async(country) =>{
+    const data = await fetchData(country) 
+    this.setState({
+      data:data,
+      country:country
+    })
+  }
+  render(){
+    const {data,country} = this.state
+    return(
+      <div className={style.container}> 
+        <img src={logo} alt="COVID-19" className={style.image} />     
+        <Card data={data}/>  
+        <CountryPicker handleCountryChange={this.handleCountryChange} />
+        <Chart data={data} country={country}/>  
+      </div>
+    )
+  }
 }
 
 export default App;
